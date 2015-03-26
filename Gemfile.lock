@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    dead_drop (0.0.1)
-      rails (~> 4.1.10)
+    dead_drop (0.1.0)
+      rails (~> 4.1.0)
 
 GEM
   remote: https://rubygems.org/
