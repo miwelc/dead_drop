@@ -12,10 +12,10 @@ module DeadDrop
 
 
   def self.drop(resource, options = {})
-    defaults = {expiration: 24.hours, limit: 0, salt: "", filename: ""}
+    defaults = {expiration: 24.hours, limit: 0, salt: "", filename: "", mime_type: nil}
     options = defaults.merge(options)
 
-    data = {resource: resource, filename: options[:filename], mime_type: options[:type]}
+    data = {resource: resource, filename: options[:filename], mime_type: options[:mime_type]}
 
     token = ""
     salted_hash = ""

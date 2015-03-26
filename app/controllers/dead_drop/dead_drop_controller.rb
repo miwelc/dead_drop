@@ -6,6 +6,8 @@ module DeadDrop
 
       res = DeadDrop.pick(token, ignore_limit: request.head?)
 
+      render nothing: true, status: :not_found and return unless res
+
       if res[:filename].blank? == false
         send_data res[:resource], type: res[:mime_type], disposition: "attachment; filename=#{res[:filename]}"
       else
