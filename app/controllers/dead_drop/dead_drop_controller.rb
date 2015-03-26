@@ -11,7 +11,7 @@ module DeadDrop
       filename = params[:filename] || res[:filename] || ""
 
       if filename.blank? == false
-        mime_extension = res[:mime_type].is_a?(Mime::Type) ? res[:mime_type].symbol.to_s : ""
+        mime_extension = res[:mime_type].is_a?(Mime::Type) ? res[:mime_type].symbol.to_s : nil
         extension = params[:format] || mime_extension || res[:filename].match(/\.\w+$/).to_s.sub(/\./,'')
         mime = Mime::Type.lookup_by_extension(extension.downcase) || 'application/octet-stream'
 
