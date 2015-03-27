@@ -1,10 +1,11 @@
 module DeadDrop
   class DeadDropController < ApplicationController
+    before_filter :check_head_request
 
     def index
       token = params[:token]
 
-      res = DeadDrop.pick(token, ignore_limit: request.head?)
+      res = DeadDrop.pick(token, ignore_limit: request.head? && !DeadDrop.head_requests_count)
 
       render nothing: true, status: :not_found and return unless res
 
@@ -24,8 +25,23 @@ module DeadDrop
           format.html { render html: res[:resource].html_safe }
           format.xml  { render xml: res[:resource] }
           format.json { render json: res[:resource] }
-          format.all  { render text: res[:resource] }
+          format.all  { render plain: res[:resource] }
         end
+      end
+
+    end
+
+    private
+
+    def check_head_request
+      return unless request.head?
+
+      if DeadDrop.ignore_head_requests
+        render nothing: true, status: 200
+      elsif DeadDrop.exists?(params[:token])
+        render nothing: true, status: 200
+      else
+        render nothing: true, status: :not_found
       end
 
     end

@@ -9,9 +9,12 @@ Gem::Specification.new do |s|
   s.version     = DeadDrop::VERSION
   s.authors     = ["Miguel Canton Cortes"]
   s.email       = ["miwelc@gmail.com"]
-  s.homepage    = "TODO"
-  s.summary     = "TODO: Summary of DeadDrop."
-  s.description = "TODO: Description of DeadDrop."
+  s.homepage    = "https://github.com/miwelc/dead_drop"
+  s.summary     = "Serving & controlling access to content in anonymous lockers"
+  s.description = "DeadDrop allows you to drop content in an anonymous locker only accessible "+
+                  "with a randomly generated token.\n"+
+                  "You can configure when the content should expire and limit the number of "+
+                  "total accesses to the content."
   s.license     = "MIT"
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]

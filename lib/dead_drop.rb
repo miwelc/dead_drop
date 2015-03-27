@@ -1,57 +1,90 @@
 require "dead_drop/engine"
 
 module DeadDrop
-  mattr_accessor :packs_prefix
-  @@packs_prefix = '_ddrop_packs_'
-  mattr_accessor :counter_prefix
-  @@counter_prefix = '_ddrop_count_'
 
-  def self.setup
+  class << self
+    mattr_accessor :cache_prefix
+    mattr_accessor :ignore_head_requests
+    mattr_accessor :head_requests_count
+    mattr_accessor :default_access_limit
+    mattr_accessor :default_expiration
+    mattr_accessor :default_salt
+
+    self.cache_prefix = '_ddrop'
+    self.default_salt = ""
+    self.default_access_limit = 0
+    self.default_expiration = 24.hours
+    self.ignore_head_requests = false
+    self.head_requests_count = false
+  end
+
+  def self.setup(&block)
     yield self
   end
 
 
   def self.drop(resource, options = {})
-    defaults = {expiration: 24.hours, limit: 0, salt: "", filename: "", mime_type: nil}
-    options = defaults.merge(options)
+    options = { expiration: DeadDrop.default_expiration,
+                limit: DeadDrop.default_access_limit,
+                salt: DeadDrop.default_salt,
+                filename: "",
+                mime_type: nil
+              }.merge(options)
 
     data = {resource: resource, filename: options[:filename], mime_type: options[:mime_type]}
 
     token = ""
-    salted_hash = ""
     loop do
       token = SecureRandom.urlsafe_base64(24)
-      salted_hash = Digest::SHA256.base64digest(options[:salt]+token)
-      break unless Rails.cache.exist?(DeadDrop.packs_prefix+salted_hash)
+      break unless DeadDrop.exists?(token, salt: options[:salt])
     end
 
-    pack_key = DeadDrop.packs_prefix+salted_hash
-    count_key = DeadDrop.counter_prefix+salted_hash
+    packs_key = DeadDrop.packs_key(token, options[:salt])
+    count_key = DeadDrop.count_key(token, options[:salt])
 
-    Rails.cache.write(pack_key, data, expires_in: options[:expiration])
+    Rails.cache.write(packs_key, data, expires_in: options[:expiration])
     Rails.cache.write(count_key, options[:limit]+1, expires_in: options[:expiration], raw: true)
 
     token
   end
 
   def self.pick(token, options = {})
-    defaults = {ignore_limit: false, salt: ""}
+    defaults = {ignore_limit: false, salt: DeadDrop.default_salt}
     options = defaults.merge(options)
 
-    salted_hash = Digest::SHA256.base64digest(options[:salt]+token)
-    pack_key = DeadDrop.packs_prefix+salted_hash
-    count_key = DeadDrop.counter_prefix+salted_hash
+    packs_key = DeadDrop.packs_key(token, options[:salt])
+    count_key = DeadDrop.count_key(token, options[:salt])
 
-    ret = Rails.cache.read(pack_key)
+    ret = Rails.cache.read(packs_key)
 
     if options[:ignore_limit] == false
       if 1 == Rails.cache.decrement(count_key, 1, initial: nil)
-        Rails.cache.delete(pack_key)
+        Rails.cache.delete(packs_key)
         Rails.cache.delete(count_key)
       end
     end
 
     ret
+  end
+
+  def self.exists?(token, options = {})
+    defaults = { salt: DeadDrop.default_salt }
+    options = defaults.merge(options)
+
+    packs_key = DeadDrop.packs_key(token, options[:salt])
+    Rails.cache.exist?(packs_key)
+  end
+
+  private
+
+  def self.packs_key(token, salt)
+    salted_hash = Digest::SHA256.base64digest(salt+token)
+    DeadDrop.cache_prefix+'_packs_'+salted_hash
+  end
+
+  def self.count_key(token, salt)
+    salted_hash = Digest::SHA256.base64digest(salt+token)
+    DeadDrop.cache_prefix+'_count_'+salted_hash
   end
 
 end
