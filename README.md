@@ -1,4 +1,4 @@
-DeadDrop
+DeadDrop [![Gem Version](https://badge.fury.io/rb/dead_drop.svg)](http://badge.fury.io/rb/dead_drop)
 ========
 
 DeadDrop is a Rails::Engine that allows you to drop content in an anonymous locker only accessible with a randomly generated token.
