@@ -5,7 +5,7 @@ DeadDrop is a Rails::Engine that allows you to drop content in an anonymous lock
 
 You can configure when the content should expire and limit the number of total accesses to the content.
 
-DeadDrop can use any cache_store that supports the decrement method. This gem has been tested with :file_store, :memory_store, :mem_cache_store and :dalli_store.
+DeadDrop can use any Cache::Store that supports the decrement method. This gem has been tested with :file_store, :memory_store, :mem_cache_store and :dalli_store.
 
 
 Supported Ruby implementations
@@ -32,7 +32,7 @@ mount DeadDrop::Engine, at: "/dead_drop"
 You can configure it in `initializers/dead_drop.rb`. Here is an example:
 ```ruby
 DeadDrop.setup do |config|
-    config.cache_store = :file_store, 'tmp/cache', { # Just configure any cache_store as you'd normally do.
+    config.cache_store = :file_store, 'tmp/cache', { # Just configure any Cache::Store as you'd normally do.
       namespace: 'ddrop',
       compress: true,
       compress_threshold: 2*1024 # 2K
@@ -48,6 +48,14 @@ DeadDrop.setup do |config|
 end
 ```
 
+If you want to use the same Cache::Store instance than the rest of your Rails app, just:
+```ruby
+DeadDrop.setup do |config|
+    config.cache_store = Rails.cache
+end
+```
+
+
 Usage
 ------------------------------
 
@@ -56,7 +64,7 @@ Usage
 csv_content = "col1, col2\n 1.012, John\n 4.332, Mary"
 token = DeadDrop.drop(csv_content, filename: "data.csv", expiration: 5.minutes, limit: 1)
 ```
-*csv_content* has been stored in Rails cache_store and a url friendly token has been returned.
+*csv_content* has been saved in Cache::Store and a url friendly token has been returned.
 This token can be used later to access programatically the resource or a url can be generated:
 ```ruby
 url = dead_drop.pick_url(token) # The resource will be rendered when accessed unless it was dropped with
