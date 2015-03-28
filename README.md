@@ -32,26 +32,26 @@ mount DeadDrop::Engine, at: "/dead_drop"
 You can configure it in `initializers/dead_drop.rb`. Here is an example:
 ```ruby
 DeadDrop.setup do |config|
-    config.cache_store = :file_store, 'tmp/cache', { # Just configure any Cache::Store as you'd normally do.
-      namespace: 'ddrop',
-      compress: true,
-      compress_threshold: 2*1024 # 2K
-    }
-    config.default_access_limit = 0       # How many accesses do you want to allow by default? (0: no limit)
-    config.default_expiration = 24.hours  # When should content expire by default? (nil: no limit)
-    config.head_requests_count = false    # When receiving a HEAD request count it towards the access limit?
-    config.ignore_head_requests = false   # Ignore HEAD requests altogether returning a 200 status code and halting.
-    config.default_salt = ''              # Optionally salt tokens before computing the SHA256 when creating the cache key.
-    config.cache_key_creation = :base64digest   # When generating the key from the salt+token (SHA256), use this representation.
-                                                # When using :file_store on Windows it is recommended to use :hexdigest
-                                                # representation in order to avoid collisions due to the case insensitive FS.
+  config.cache_store = :file_store, 'tmp/cache', { # Just configure any Cache::Store as you'd normally do.
+    namespace: 'ddrop',
+    compress: true,
+    compress_threshold: 2*1024 # 2K
+  }
+  config.default_access_limit = 0       # How many accesses do you want to allow by default? (0: no limit)
+  config.default_expiration = 24.hours  # When should content expire by default? (nil: no limit)
+  config.head_requests_count = false    # When receiving a HEAD request count it towards the access limit?
+  config.ignore_head_requests = false   # Ignore HEAD requests altogether returning a 200 status code and halting.
+  config.default_salt = ''              # Optionally salt tokens before computing the SHA256 when creating the cache key.
+  config.cache_key_creation = :base64digest   # When generating the key from the salt+token (SHA256), use this representation.
+                                              # When using :file_store on Windows it is recommended to use :hexdigest
+                                              # representation in order to avoid collisions due to the case insensitive FS.
 end
 ```
 
 If you want to use the same Cache::Store instance than the rest of your Rails app, just:
 ```ruby
 DeadDrop.setup do |config|
-    config.cache_store = Rails.cache
+  config.cache_store = Rails.cache
 end
 ```
 
