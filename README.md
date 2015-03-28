@@ -22,7 +22,7 @@ If you have problems, please enter an issue.
 Installation and Configuration
 ------------------------------
 
-Add `gem 'dead_drop', git: 'git://github.com/miwelc/dead_drop.git'` to your Gemfile.
+Add `gem 'dead_drop'` to your Gemfile.
 
 If you want to use the Controller option described below add this to your `routes.rb`:
 ```ruby
