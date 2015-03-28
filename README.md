@@ -9,7 +9,7 @@ DeadDrop can use any Cache::Store that supports the decrement method. This gem h
 
 
 Supported Ruby implementations
-------------------------------------------------
+------------------------------
 
 DeadDrop should work on:
 
@@ -29,18 +29,16 @@ If you want to use the Controller option described below add this to your `route
 mount DeadDrop::Engine, at: "/dead_drop"  # Or any mount point you like
 ```
 
-You can configure this gem in `initializers/dead_drop.rb`. Here is an example:
+You can configure this gem in `initializers/dead_drop.rb`. Here is an example with the default values:
 ```ruby
 DeadDrop.setup do |config|
   config.cache_store = :file_store, 'tmp/cache', { # Just configure any Cache::Store as you'd normally do.
     namespace: 'ddrop',
     compress: true,
-    compress_threshold: 2*1024 # 2K
+    compress_threshold: 2*1024  # 2K
   }
-  config.default_access_limit = 0       # How many accesses do you want to allow by default? (0: no limit)
+  config.default_access_limit = nil     # How many accesses do you want to allow by default? (nil: no limit)
   config.default_expiration = 24.hours  # When should content expire by default? (nil: no limit)
-  config.head_requests_count = false    # When receiving a HEAD request count it towards the access limit?
-  config.ignore_head_requests = false   # Ignore HEAD requests altogether returning a 200 status code and halting.
   config.default_salt = ''              # Optionally salt tokens before computing the SHA256 when creating the cache key.
   config.cache_key_creation = :base64digest   # When generating the key from the salt+token (SHA256), use this representation.
                                               # When using :file_store on Windows it is recommended to use :hexdigest
@@ -57,7 +55,7 @@ end
 
 
 Usage
-------------------------------
+-----
 
 **Dropping**
 ```ruby
@@ -87,20 +85,25 @@ content = DeadDrop.pick(token)
 ```
 If the token is still valid this hash will be returned: `{:resource=>content, :filename=>name, :mime_type=>mime}`. Else `nil` is returned.
 
+If you just want to check the validity of the token without actually loading the resource:
+```ruby
+DeadDrop.exists?(token)
+```
+
 
 Helping Out
--------------
+-----------
 
 If you have a fix you wish to provide, please send a pull request on github.
 
 
 Author
-----------
+------
 
 Miguel Canton Cortes, [GitHub](http://github.com/miwelc)
 
 
 Copyright
------------
+---------
 
 MIT Licensed

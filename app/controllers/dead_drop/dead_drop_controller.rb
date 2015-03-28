@@ -5,7 +5,7 @@ module DeadDrop
     def index
       token = params[:token]
 
-      res = DeadDrop.pick(token, ignore_limit: request.head? && !DeadDrop.head_requests_count)
+      res = DeadDrop.pick(token)
 
       render nothing: true, status: :not_found and return unless res
 
@@ -36,9 +36,7 @@ module DeadDrop
     def check_head_request
       return unless request.head?
 
-      if DeadDrop.ignore_head_requests
-        render nothing: true, status: 200
-      elsif DeadDrop.exists?(params[:token])
+      if DeadDrop.exists?(params[:token])
         render nothing: true, status: 200
       else
         render nothing: true, status: :not_found

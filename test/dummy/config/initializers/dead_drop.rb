@@ -1,3 +1,3 @@
 DeadDrop.setup do |config|
-    config.ignore_head_requests = false
+    config.default_access_limit = nil
 end

@@ -4,8 +4,6 @@ module DeadDrop
 
   class << self
     mattr_accessor :cache_store
-    mattr_accessor :ignore_head_requests
-    mattr_accessor :head_requests_count
     mattr_accessor :default_access_limit
     mattr_accessor :default_expiration
     mattr_accessor :default_salt
@@ -18,10 +16,8 @@ module DeadDrop
       compress_threshold: 2*1024 # 2K
     }
     self.default_salt = ''
-    self.default_access_limit = 0
+    self.default_access_limit = nil
     self.default_expiration = 24.hours
-    self.ignore_head_requests = false
-    self.head_requests_count = false
     self.cache_key_creation = :base64digest
   end
 
@@ -37,6 +33,8 @@ module DeadDrop
                 filename: "",
                 mime_type: nil
               }.merge(options)
+
+    options[:limit] = 0 if options[:limit].nil? || options[:limit] < 0
 
     data = {resource: resource, filename: options[:filename], mime_type: options[:mime_type]}
 
