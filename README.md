@@ -39,6 +39,7 @@ DeadDrop.setup do |config|
   }
   config.default_access_limit = nil     # How many accesses do you want to allow by default? (nil: no limit)
   config.default_expiration = 24.hours  # When should content expire by default? (nil: no limit)
+  config.token_length = 32
   config.default_salt = ''              # Optionally salt tokens before computing the SHA256 when creating the cache key.
   config.cache_key_creation = :base64digest   # When generating the key from the salt+token (SHA256), use this representation.
                                               # When using :file_store on Windows it is recommended to use :hexdigest

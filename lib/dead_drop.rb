@@ -7,6 +7,7 @@ module DeadDrop
     mattr_accessor :default_access_limit
     mattr_accessor :default_expiration
     mattr_accessor :default_salt
+    mattr_accessor :token_length
     mattr_accessor :cache_key_creation
     mattr_accessor :cache
 
@@ -18,6 +19,7 @@ module DeadDrop
     self.default_salt = ''
     self.default_access_limit = nil
     self.default_expiration = 24.hours
+    self.token_length = 32
     self.cache_key_creation = :base64digest
   end
 
@@ -40,7 +42,7 @@ module DeadDrop
 
     token = ""
     loop do
-      token = SecureRandom.urlsafe_base64(24)
+      token = SecureRandom.urlsafe_base64((DeadDrop.token_length*3)/4)
       break unless DeadDrop.exists?(token, salt: options[:salt])
     end
 
