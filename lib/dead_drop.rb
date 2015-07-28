@@ -27,7 +27,6 @@ module DeadDrop
     yield self
   end
 
-
   def self.drop(resource, options = {})
     options = { expiration: DeadDrop.default_expiration,
                 limit: DeadDrop.default_access_limit,
@@ -72,6 +71,16 @@ module DeadDrop
     end
 
     ret
+  end
+
+  def self.delete(token, options = {})
+    defaults = {salt: DeadDrop.default_salt}
+    options = defaults.merge(options)
+
+    packs_key = DeadDrop.packs_key(token, options[:salt])
+    count_key = DeadDrop.count_key(token, options[:salt])
+    DeadDrop.cache.delete(packs_key)
+    DeadDrop.cache.delete(count_key)
   end
 
   def self.exists?(token, options = {})
